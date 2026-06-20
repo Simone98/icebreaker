@@ -197,7 +197,7 @@ class GiocoQR extends Phaser.Scene {
 
       // Creiamo un timer loop di Phaser che si ripete per ogni carattere
       this.time.addEvent({
-        delay: 1,
+        delay: 30,
         callback: () => {
           // Aggiunge il carattere corrente al testo a schermo
           testoObj.text += isEnglish ? testoCompleto[indiceCarattere] : testoItaliano[indiceCarattere];
