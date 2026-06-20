@@ -5,11 +5,12 @@ function ottieniDatiDaURL() {
   const urlParams = new URLSearchParams(window.location.search);
   const dataRaw = urlParams.get('data');
 
-  // Dati di fallback per i test in locale
+  // Dati di fallback aggiornati con isInglese
   const datiDefault = {
     personaggio: "Pagina non trovata",
     colore: "#ff0000",
-    frase: "Ti sei perso?"
+    frase: "Ti sei perso?",
+    isInglese: false // Impostato a false di default per i test locali
   };
 
   if (!dataRaw) return datiDefault;
@@ -17,13 +18,14 @@ function ottieniDatiDaURL() {
   try {
     const stringaDecodificata = LZString.decompressFromEncodedURIComponent(dataRaw);
     if (!stringaDecodificata) {
-      console.error("Errore", e);
+      console.error("Errore: Stringa decodificata vuota o non valida con LZ-String");
       return datiDefault;
     }
 
+    // Ritorna l'oggetto JSON completo che ora include personaggio, colore, frase e isInglese
     return JSON.parse(stringaDecodificata);
   } catch (e) {
-    console.error("Errore", e);
+    console.error("Errore nel parsing dei dati URL", e);
     return datiDefault;
   }
 }
@@ -90,76 +92,103 @@ class GiocoQR extends Phaser.Scene {
       });
     }
 
-    console.log(this.datiConfig);
+    console.log(this.datiConfig)
 
-    await this.mostraScrittaAnimata(this.testoAnimato, "Grazie per aver accettato la scommessa.\n\nPremetto che questo 'gioco' non salverà nessun dato, e appena chiuderai, tutto andrà perso.          ");
+    await this.mostraScrittaAnimata(this.testoAnimato,
+      this.datiConfig.isInglese,
+      "Thank you for giving me a chance.\n\nI'm gonna be honest with you: I didn't have time to make what I wanted to make, but I wouldn't have slept if I didn't show this to you.",
+      "Grazie per avermi dato una possibilità.\n\nSarò sincero con te: non ho avuto tempo di fare ciò che volevo fare, ma tu vali qualsiasi tentativo.");
 
-    await this.mostraPulsanteProsegui("Ho capito! Iniziamo!");
+    await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "I understand! Let's start!" : "Ho capito! Iniziamo!");
 
-    await this.mostraScrittaAnimata(this.testoAnimato, "Ora, una piccola domanda!");
+    await this.mostraScrittaAnimata(this.testoAnimato,
+      this.datiConfig.isInglese,
+      "At this point, I should have asked you some questions, but since we're running late, I'll skip everything and get straight to the point: as soon as I saw you, I thought you were an interesting person, and I'd like to get to know you better.",
+      "In questo momento, avrei dovuto chiederti alcune domande, ma dato che siamo in ritardo, salto tutto e vado dritto al punto: appena ti ho vista ho pensato che tu fossi una persona interessante, e mi piacerebbe conoscerti meglio.");
 
-    await this.mostraPulsanteProsegui("Continua");
+    await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Continue" : "Continua");
 
-    await this.mostraScrittaAnimata(this.testoAnimato, "In questo momento, a che gioco giocheresti più volentieri?");
+    await this.mostraScrittaAnimata(this.testoAnimato, true, this.datiConfig.frase, this.datiConfig.frase);
 
-    let scelta = await this.mostraScelteAwait(["Rompicapo", "Platformer", "Nessuno, non gioco!"]);
-    if (scelta === 2) {
-      await this.mostraScrittaAnimata(this.testoAnimato, `Sei sicura? Non ti nego che ho letteralmente programmato dei giochini veloci per questa occasione!`);
-      scelta = await this.mostraScelteAwait(["Rompicapo", "Platformer", "Sono sicura, no!"]);
-      if (scelta === 2) {
-        await this.mostraScrittaAnimata(this.testoAnimato, `Ok, ok, non ti forzo! Allora andiamo subito al dunque, ${this.datiConfig.personaggio}!`);
-        await this.mostraPulsanteProsegui();
-        await this.mostraScrittaAnimata(this.testoAnimato, `Ho fatto tutto ciò per strapparti un sorriso, e dirti che ${this.datiConfig.frase}`);
-        await this.mostraPulsanteProsegui();
-        await this.mostraScrittaAnimata(this.testoAnimato, `Guarda, avevo pure disegnato il tuo personaggio!`);
-        // ToDo: Spawna personaggio custom
-        await this.mostraPulsanteProsegui();
-        // ToDo: Nascondi personaggio
-        await this.mostraScrittaAnimata(this.testoAnimato, `Prima di salutarci, ti mostro al volo una cartolina ricordo che puoi salvare sul tuo telefono!`);
-        // ToDo: Spawna cartolina con frase e personaggio
-
-        let sceltaCartolina = 0;
-        while (sceltaCartolina === 0) {
-          sceltaCartolina = await this.mostraScelteAwait(["Scarica immagine", "Continua"]);
-          if(sceltaCartolina === 0) {
-            // ToDo: Genera immagine da scaricare (con html2canvas o simili) e triggera download
-          }
-        }
-
-        await this.mostraScrittaAnimata(this.testoAnimato, `Spero di averti lasciato un ricordo unico e differente dal solito! E si, l'ho fatto anche per lasciarti il mio numero ;)`);
-        await this.mostraScelteAwait(["Sei stato interessante!", "Ok, te lo concedo.", "Nah, pessimo!"]);
-        await this.mostraScrittaAnimata(this.testoAnimato, `Non ho account social 'personali' al momento, ma se vuoi contattarmi, scrivimi pure su whatsapp! Ti mostro il mio contatto tra un secondo!`);
-        await this.mostraScelteAwait(["Perfetto, lo farò!", "Ci penserò su!", "No, grazie!"]);
-        return; // Finiamo qui se non vuole giocare
-      }
-    }
+    const ingChoices = ["Aw, that's cute", "Hmm, you could have done better", "Ew, that's cringe"];
+    const itChoices = ["Aw, che carino", "Mmm, potevi impegnarti di più", "Ew, che cringe"];
+    let scelta = await this.mostraScelteAwait(this.datiConfig.isInglese ? ingChoices : itChoices);
 
     switch (scelta) {
       case 0:
-        await this.mostraScrittaAnimata(this.testoAnimato, `Ottimo! Allora, ${this.datiConfig.personaggio}, spero che il mio gioco sia all'altezza delle tue aspettative!`);
+        await this.mostraScrittaAnimata(this.testoAnimato,
+          this.datiConfig.isInglese,
+          `I'm glad you like it! I hope I can surprise you again, ${this.datiConfig.personaggio}!`,
+          `Sono contento che ti piaccia! Spero di riuscire a sorprenderti ancora, ${this.datiConfig.personaggio}!`);
+
+        await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Oh, that's my name!" : "Oh, è il mio nome!");
+
+        await this.mostraScrittaAnimata(this.testoAnimato,
+          this.datiConfig.isInglese,
+          `Yeah, and I hope I'll hear about you again ;)`,
+          `Già, e spero che ne sentirò ancora parlare ;)`);
+
+        await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Continue" : "Continua");
+
         break;
       case 1:
-        await this.mostraScrittaAnimata(this.testoAnimato, `Una fan dei platformer! Preparati, ${this.datiConfig.personaggio}, è il momento di saltare!`);
+        await this.mostraScrittaAnimata(this.testoAnimato,
+          this.datiConfig.isInglese,
+          `I'm glad you like it! I hope I can surprise you again, ${this.datiConfig.personaggio}!`,
+          `Se mi dai una settimana, giuro che farò addirittura dei videogiochi su di te, ${this.datiConfig.personaggio}!`);
+
+        await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Continue" : "Continua");
+
+        await this.mostraScrittaAnimata(this.testoAnimato,
+          this.datiConfig.isInglese,
+          `I'm totally serious about that, I just need some time to prepare something worthy of you!`,
+          `Sono totalmente serio, ho solo bisogno di un po' di tempo per preparare qualcosa degno di te!`);
+
+        await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Continue" : "Continua");
+
         break;
       case 2:
+        await this.mostraScrittaAnimata(this.testoAnimato,
+          this.datiConfig.isInglese,
+          `Oh, I see, ${this.datiConfig.personaggio}, I'm sure a lot of guys have used this method before!`,
+          `Ah si immagino, ${this.datiConfig.personaggio}, di sicuro un sacco di ragazzi hanno usato questo metodo!`);
 
+        await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Continue" : "Continua");
+
+        await this.mostraScrittaAnimata(this.testoAnimato,
+          this.datiConfig.isInglese,
+          `Well, actually no!\n\nBecause I made it myself from scratch in less than 2 hours, so don't be so harsh!`,
+          `E invece no!\n\nPerchè l'ho fatto io da zero in meno di 2 ore, quindi non essere così cattiva!`);
+
+        await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Continue" : "Continua");
+
+        await this.mostraScrittaAnimata(this.testoAnimato,
+          this.datiConfig.isInglese,
+          `I guarantee I'll be able to surprise you, if you give me the chance!`,
+          `Ti garantisco che riuscirò a stupirti, se me ne darai l'occasione!`);
+          
+        await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Continue" : "Continua");
         break;
     }
 
-    await this.mostraPulsanteProsegui();
+    await this.mostraScrittaAnimata(this.testoAnimato,
+      this.datiConfig.isInglese,
+      "Well, I'm out of ideas and time, so I'll leave you my WhatsApp contact, and whenever you want we can keep chatting there! :)\n\nOr in person now, of course!",
+      "Ora, dato che non so cos'altro dire e non ho più tempo, ti lascio il mio contatto WhatsApp, e quanto vorrai possiamo continuare a chiacchierare lì! :)\n\nOppure adesso di persona, ovviamente!");
+
+    await this.mostraPulsanteWhatsapp(this.datiConfig.isInglese ? "[ Message me ;) ]" : "[ Scrivimi ;) ]");
 
     await this.mostraScrittaAnimata(this.testoAnimato, this.datiConfig.frase);
-    // await this.mostraScrittaAnimata(this.titolo, this.datiConfig.personaggio);
-
   }
 
-  mostraScrittaAnimata(testoObj, testoCompleto, highlightColor = null, highlightIndices = []) {
+  mostraScrittaAnimata(testoObj, isEnglish, testoCompleto, testoItaliano, highlightColor = null, highlightIndices = []) {
+
     return new Promise((resolve) => {
       // Reset del testo corrente
       testoObj.setText('');
 
       // Controllo di sicurezza se la stringa è vuota
-      if (!testoCompleto || testoCompleto.length === 0) {
+      if (isEnglish ? !testoCompleto || testoCompleto.length === 0 : !testoItaliano || testoItaliano.length === 0) {
         resolve();
         return;
       }
@@ -168,18 +197,18 @@ class GiocoQR extends Phaser.Scene {
 
       // Creiamo un timer loop di Phaser che si ripete per ogni carattere
       this.time.addEvent({
-        delay: 50,
+        delay: 1,
         callback: () => {
           // Aggiunge il carattere corrente al testo a schermo
-          testoObj.text += testoCompleto[indiceCarattere];
+          testoObj.text += isEnglish ? testoCompleto[indiceCarattere] : testoItaliano[indiceCarattere];
           indiceCarattere++;
 
           // Quando ha finito di scrivere tutto il testo, risolve la Promise
-          if (indiceCarattere >= testoCompleto.length) {
+          if (indiceCarattere >= (isEnglish ? testoCompleto.length : testoItaliano.length)) {
             resolve();
           }
         },
-        repeat: testoCompleto.length - 1
+        repeat: (isEnglish ? testoCompleto.length : testoItaliano.length) - 1
       });
     });
   }
@@ -219,6 +248,57 @@ class GiocoQR extends Phaser.Scene {
 
         // RISOLVIAMO LA PROMISE: Questo sblocca l'await nel tuo flusso lineare!
         resolve();
+      });
+    });
+  }
+
+  mostraPulsanteWhatsapp(testo = 'Scrivimi ;)') {
+    return new Promise((resolve) => {
+      const numeroWa = "393936554477";
+
+      // Testo precompilato opzionale da inviare (lascia stringa vuota "" se non vuoi testo)
+      const messaggioPrecompilato = `Ciao! Sono ${this.datiConfig.personaggio}.`;
+
+      // Calcoliamo il centro dello schermo per posizionare il pulsante
+      const xCentro = this.sys.game.config.width / 2;
+      const yPos = 550;
+
+      // Testo dinamico in base alla lingua del QR
+      const testoPulsante = testo;
+
+      // 1. Creiamo l'oggetto di testo che fa da pulsante (Identico al tuo)
+      const pulsante = this.add.text(xCentro, yPos, testoPulsante, {
+        fontSize: '20px', // Leggermente più piccolo per far stare scritte lunghe in inglese su schermi stretti
+        fill: '#25D366',  // Il classico verde di WhatsApp per distinguerlo!
+        fontStyle: 'bold',
+        fontFamily: 'Courier New',
+        backgroundColor: '#000000',
+        padding: { x: 15, y: 10 }
+      });
+
+      // Centriamo il perno per farlo essere perfettamente in mezzo
+      pulsante.setOrigin(0.5);
+
+      // 2. Rendiamo il pulsante cliccabile/tappabile sullo schermo dello smartphone
+      pulsante.setInteractive({ useHandCursor: true });
+
+      // Effetto visivo al passaggio
+      pulsante.on('pointerover', () => pulsante.setAlpha(0.8));
+      pulsante.on('pointerout', () => pulsante.setAlpha(1));
+
+      // 3. L'evento di click/tap unico
+      pulsante.once('pointerdown', () => {
+
+        // Prepariamo l'URL con il testo codificato per i browser mobile
+        const testoCodificato = encodeURIComponent(messaggioPrecompilato);
+        let urlFinale = `https://wa.me/${numeroWa}`;
+
+        if (messaggioPrecompilato) {
+          urlFinale += `?text=${testoCodificato}`;
+        }
+
+        // Apre direttamente l'applicazione di WhatsApp o WhatsApp Web
+        window.open(urlFinale, '_blank');
       });
     });
   }
