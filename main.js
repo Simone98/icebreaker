@@ -94,6 +94,143 @@ class GiocoQR extends Phaser.Scene {
 
     console.log(this.datiConfig)
 
+    if (this.datiConfig.personaggio === "lei") {
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Ciao! Sei la ragazza numero [ERR_0R_04] che apre quest'app!\n\nSe leggi questo messaggio significa che vorrei proprio parlarti, dato che mi hai incuriosito!");
+
+      await this.mostraPulsanteProsegui("Uhm? Cosa?");
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Si!\n\nTi ho vista da lontano, e penso veramente che tu sia una persona interessante!");
+
+      await this.mostraPulsanteProsegui("Ah... Ok...");
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Ok, basta dire cavolate.\n\nLa verità è che tu sei stata l'ultima persona a testare questo sito, e poi non ho più continuato con l'idea.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Questa non è neanche l'app che conosci.\n\nNulla di questo è generico, e ogni parola che ho scritto, l'ho pensata esclusivamente per te.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Dopo il mio 'periodo difficile' del cambio di vita, ho finalmente trovato un equilibrio.\n\nIl mio sogno, la mia libertà, e la mia felicità.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Il progetto iniziale era vivere il momento, dire sempre di si a tutto, e provare più cose possibili.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Ho fatto le mie prime canne (3 volte in una settimana!), sono andato a concerti, ho conosciuto persone nuove, e ho messo da parte ciò che sono sempre stato.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Ho sempre fatto tutto con la consapevolezza di cercare il mio vero me stesso.\n\nPer questo, non ho più continuato con certe cose. Non mi tradirò mai, e i miei obbiettivi sono gli stessi di sempre.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Ma proprio quando sembra tutto sotto controllo, la vita ci presenta qualcosa su cui non possiamo averne.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "E no, non sto parlando direttamente di te, ma di come tu mi abbia completamente sconvolto.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Da quando abbiamo parlato al mare, da quando ti sei dimostrata così intelligente ed empatica, ho iniziato a sentire veramente qualcosa di strano.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Ho passato delle serate insonni, a pensare a te, al tuo sorriso mentre parliamo di noi e ci analizziamo a vicenda. Al batticuore che ho quando parliamo, ma che (forse) non si vedeva da fuori.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Ho l'immagine del tuo sguardo di quando ho raccolto la palla che ti è caduta, a letteralmente 20 cm da te. Quegli occhi che mi guardavano dentro, e quel sorriso trattenuto che mi è sembrato come il mio.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Era oggettivamente inutile andare a prenderla, ma la mia razionalità cessa di esistere quando penso anche solo allo sfiorarti, o al poterti stare accanto.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "La verità è che ti voglio conoscere a fondo, ma questo mi causerà alcuni colpi di coda. Mi conosco, e no, non è colpa di un 'trauma' o 'scompenso emotivo', ma conoscerti, mi porterà a perdere completamente la testa per te.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Sinceramente, non voglio forzarti, ma come tu hai scombussolato la mia vita su cui avevo pieno controllo, vorrei poter provare a scombussolare la tua.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Spero che tu mi conosca, e che sappia che non ti limiterò mai.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "Però vorrei poter pensare ad un futuro in cui continuamo a psicanalizzarci a vicenda, parlando di tutto e scambiandoci continuamente opinioni il più razionalmente e soggettivamente possibile.");
+
+      await this.mostraPulsanteProsegui();
+
+      await this.mostraScrittaAnimata(this.testoAnimato,
+        false,
+        "",
+        "");
+
+      await this.mostraPulsanteProsegui();
+
+      return;
+    }
+
     await this.mostraScrittaAnimata(this.testoAnimato,
       this.datiConfig.isInglese,
       "Thank you for giving me a chance.\n\nI'm gonna be honest with you: I didn't have time to make what I wanted to make, but I wouldn't have slept if I didn't show this to you.",
@@ -166,7 +303,7 @@ class GiocoQR extends Phaser.Scene {
           this.datiConfig.isInglese,
           `I guarantee I'll be able to surprise you, if you give me the chance!`,
           `Ti garantisco che riuscirò a stupirti, se me ne darai l'occasione!`);
-          
+
         await this.mostraPulsanteProsegui(this.datiConfig.isInglese ? "Continue" : "Continua");
         break;
     }
@@ -197,7 +334,7 @@ class GiocoQR extends Phaser.Scene {
 
       // Creiamo un timer loop di Phaser che si ripete per ogni carattere
       this.time.addEvent({
-        delay: 30,
+        delay: 2,
         callback: () => {
           // Aggiunge il carattere corrente al testo a schermo
           testoObj.text += isEnglish ? testoCompleto[indiceCarattere] : testoItaliano[indiceCarattere];
