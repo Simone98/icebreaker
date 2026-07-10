@@ -49,8 +49,8 @@ class GiocoQR extends Phaser.Scene {
       // 1. Controlliamo se la texture è già stata caricata (per evitare duplicati se il codice si ripete)
       if (!this.textures.exists('fotoEzio')) {
         // Carichiamo l'immagine al volo usando il loader asincrono di Phaser
-        this.load.image('fotoEzio', 'src/assets/ezio.jpg');
-        this.load.audio('musicaEzio', 'src/assets/estate.mp3');
+        this.load.image('fotoEzio', 'assets/ezio.jpg');
+        this.load.audio('musicaEzio', 'assets/estate.mp3');
 
         // Creiamo una Promise per aspettare che Phaser finisca di scaricare il file
         await new Promise((resolve) => {
