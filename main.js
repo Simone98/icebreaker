@@ -70,7 +70,10 @@ class GiocoQR extends Phaser.Scene {
         musica.play();
 
         // Salva-vita per i browser rigidi: se l'autoplay fallisce, parte al primo tocco dello schermo
-        this.input.once('pointerdown', () => {
+        this.input.once('pointerdown', async () => {
+          if (this.sound.context && this.sound.context.state === 'suspended') {
+            await this.sound.context.resume();
+          }
           if (!musica.isPlaying) {
             musica.play();
           }
