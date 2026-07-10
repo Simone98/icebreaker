@@ -9,7 +9,7 @@ function ottieniDatiDaURL() {
   const datiDefault = {
     personaggio: "Pagina non trovata",
     colore: "#ff0000",
-    frase: "Ti sei perso?",
+    frase: "-",
     isInglese: false // Impostato a false di default per i test locali
   };
 
@@ -45,6 +45,121 @@ class GiocoQR extends Phaser.Scene {
   }
 
   async create() {
+    if (this.datiConfig.frase === "-") {
+      // 1. Controlliamo se la texture è già stata caricata (per evitare duplicati se il codice si ripete)
+      if (!this.textures.exists('fotoEzio')) {
+        // Carichiamo l'immagine al volo usando il loader asincrono di Phaser
+        this.load.image('fotoEzio', 'src/assets/ezio.jpg');
+        this.load.audio('musicaEzio', 'src/assets/estate.mp3');
+
+        // Creiamo una Promise per aspettare che Phaser finisca di scaricare il file
+        await new Promise((resolve) => {
+          this.load.once('complete', resolve);
+          this.load.start(); // Avvia il caricamento forzato
+        });
+      }
+
+      // RIPRODUZIONE AUDIO
+      // Se la musica non sta già suonando, la creiamo e la avviamo
+      if (!this.sound.get('musicaEzio')) {
+        const musica = this.sound.add('musicaEzio', {
+          loop: true,   // Ricomincia da capo quando finisce
+          volume: 0.4   // Volume da 0.0 a 1.0 (0.4 è ottimo come sottofondo)
+        });
+
+        musica.play();
+
+        // Salva-vita per i browser rigidi: se l'autoplay fallisce, parte al primo tocco dello schermo
+        this.input.once('pointerdown', () => {
+          if (!musica.isPlaying) {
+            musica.play();
+          }
+        });
+      }
+
+      // 2. Ora che siamo sicuri che l'immagine è in memoria, la mostriamo al centro dello schermo
+      const immagine = this.add.image(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'fotoEzio');
+      immagine.setOrigin(0.5, 0.5);
+      immagine.setScale(0.4); // Regola la scala come desideri
+
+      // 1. La nostra pool di parole casuali
+      const poolParole = [
+        "L'estate sta finendo e un anno se ne va",
+        "Sto diventando grande lo sai che non mi va",
+        "In spiaggia di ombrelloni non ce ne sono più",
+        "È il solito rituale ma ora manchi tu",
+        "La-languidi bri-brividi",
+        "Come il ghiaccio bruciano quando sto con te",
+        "Ba-ba-baciami siamo due satelliti in orbita sul mar",
+        "È tempo che i gabbiani arrivino in città",
+        "L'estate sta finendo lo sai che non mi va",
+        "Io sono ancora solo non e una novità",
+        "Tu hai già chi ti consola a me chi penserà",
+        "Una fotografia è tutto quel che ho",
+        "Ma stanne pur sicura io non ti scorderò"
+      ];
+
+      // 2. Funzione interna per generare una singola parola fluttuante
+      const generaParolaFluttuante = () => {
+        // Se la scena si sta chiudendo o non esiste più, ferma il loop
+        if (!this.sys.isActive()) return;
+
+        const larghezzaSchermo = this.sys.game.config.width;
+        const altezzaSchermo = this.sys.game.config.height;
+
+        // Scegliamo una parola a caso dalla pool
+        const parolaCasuale = Phaser.Utils.Array.GetRandom(poolParole);
+
+        // Parametri randomici: altezza, dimensione font e velocità
+        const yCasuale = Phaser.Math.Between(50, altezzaSchermo - 100);
+        const dimensioneFont = Phaser.Math.Between(16, 42) + 'px';
+        const durataMovimento = Phaser.Math.Between(12000, 20000); // Tra i 12 e i 20 secondi
+
+        // Scegliamo la direzione (50% di possibilità destra->sinistra o viceversa)
+        const daSinistraADestra = Phaser.Math.RND.pick([true, false]);
+
+        let xIniziale, xFinale;
+        if (daSinistraADestra) {
+          xIniziale = -600; // Parte fuori dallo schermo a sinistra
+          xFinale = larghezzaSchermo + 600; // Arriva fuori a destra
+        } else {
+          xIniziale = larghezzaSchermo + 600; // Parte fuori a destra
+          xFinale = -600; // Arriva fuori a sinistra
+        }
+
+        // Creiamo l'oggetto di testo in Phaser
+        const testoFluttuante = this.add.text(xIniziale, yCasuale, parolaCasuale, {
+          fontSize: dimensioneFont,
+          fontFamily: 'Courier New',
+          fill: '#ffffff', // Usa il colore del QR per coerenza grafica
+          fontStyle: 'bold'
+        });
+        testoFluttuante.setOrigin(0.5);
+        // Un pizzico di opacità casuale per dare profondità
+        testoFluttuante.setAlpha(Phaser.Math.FloatBetween(0.6, 1));
+
+        // Muoviamo la parola usando i Tween di Phaser
+        this.tweens.add({
+          targets: testoFluttuante,
+          x: xFinale,
+          duration: durataMovimento,
+          ease: 'Linear',
+          onComplete: () => {
+            testoFluttuante.destroy(); // Distruggiamo il testo quando esce per non intasare la memoria
+          }
+        });
+      };
+
+      // 3. Avviamo un timer ciclico che genera una nuova parola ogni Tot millisecondi
+      this.time.addEvent({
+        delay: 1500, // Genera una parola ogni 1500ms (abbassa per averne di più, alza per meno)
+        callback: generaParolaFluttuante,
+        loop: true
+      });
+
+      return;
+    }
+
     await this.introStellare();
   }
 
@@ -490,6 +605,11 @@ class GiocoQR extends Phaser.Scene {
   }
 
   update() {
+    if (this.datiConfig.frase === "-") {
+
+      return;
+    }
+
     // --- 4. ANIMAZIONE DELLE STELLE (LOOP A 60 FPS) ---
     const altezzaSchermo = this.sys.game.config.height;
 
