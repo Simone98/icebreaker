@@ -18,14 +18,14 @@ function ottieniDatiDaURL() {
   try {
     const stringaDecodificata = LZString.decompressFromEncodedURIComponent(dataRaw);
     if (!stringaDecodificata) {
-      console.error("Errore: Stringa decodificata vuota o non valida con LZ-String");
+      console.error("Errore manomissione");
       return datiDefault;
     }
 
     // Ritorna l'oggetto JSON completo che ora include personaggio, colore, frase e isInglese
     return JSON.parse(stringaDecodificata);
   } catch (e) {
-    console.error("Errore nel parsing dei dati URL", e);
+    console.error("Errore manomissione", e);
     return datiDefault;
   }
 }
